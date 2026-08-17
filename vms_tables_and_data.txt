@@ -1,0 +1,407 @@
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    full_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    phone_number VARCHAR(15),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
+
+
+CREATE TABLE vehicles (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    vehicle_number VARCHAR(20) NOT NULL UNIQUE,
+    vehicle_type VARCHAR(50),
+    model VARCHAR(50),
+    brand VARCHAR(50),
+    year_of_manufacture INT,
+    color VARCHAR(30),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+
+
+
+CREATE TABLE maintenance_records (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    vehicle_id INT NOT NULL,
+    service_type VARCHAR(100),
+    service_date DATE,
+    cost DECIMAL(10, 2),
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (vehicle_id) REFERENCES vehicles(id) ON DELETE CASCADE
+);
+
+
+
+
+
+
+
+
+CREATE TABLE fines (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    vehicle_id INT NOT NULL,
+    fine_amount DECIMAL(10, 2) NOT NULL,
+    fine_date DATE,
+    fine_reason VARCHAR(255),
+    status ENUM('Paid', 'Unpaid') DEFAULT 'Unpaid',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (vehicle_id) REFERENCES vehicles(id) ON DELETE CASCADE
+);
+
+
+
+
+
+
+
+CREATE TABLE fuel_tracking (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    vehicle_id INT NOT NULL,
+    fuel_date DATE,
+    fuel_quantity DECIMAL(10, 2),  -- in liters
+    fuel_cost DECIMAL(10, 2),  -- in local currency
+    odometer_reading DECIMAL(10, 2),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (vehicle_id) REFERENCES vehicles(id) ON DELETE CASCADE
+);
+
+
+
+
+
+
+
+
+
+CREATE TABLE gps_tracking (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    vehicle_id INT NOT NULL,
+    latitude DECIMAL(10, 7),
+    longitude DECIMAL(10, 7),
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (vehicle_id) REFERENCES vehicles(id) ON DELETE CASCADE
+);
+
+
+
+
+
+
+
+CREATE TABLE fuel_level_alerts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    vehicle_id INT NOT NULL,
+    alert_date DATE,
+    fuel_level DECIMAL(5, 2),  -- percentage of fuel remaining
+    status ENUM('Resolved', 'Pending') DEFAULT 'Pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (vehicle_id) REFERENCES vehicles(id) ON DELETE CASCADE
+);
+
+
+
+
+CREATE TABLE insurance (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    vehicle_id INT NOT NULL,
+    insurance_company VARCHAR(100),
+    policy_number VARCHAR(100),
+    start_date DATE,
+    end_date DATE,
+    status ENUM('Active', 'Expired') DEFAULT 'Active',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (vehicle_id) REFERENCES vehicles(id) ON DELETE CASCADE
+);
+
+
+
+
+
+
+
+
+
+CREATE TABLE alerts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    vehicle_id INT NOT NULL,
+    alert_type VARCHAR(100),
+    description TEXT,
+    status ENUM('Pending', 'Completed') DEFAULT 'Pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (vehicle_id) REFERENCES vehicles(id) ON DELETE CASCADE
+);
+
+
+
+
+
+
+
+
+
+
+
+
+CREATE TABLE fastag_service (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    vehicle_id INT NOT NULL,
+    fastag_number VARCHAR(100),
+    issued_by VARCHAR(100),
+    issue_date DATE,
+    balance DECIMAL(10, 2),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (vehicle_id) REFERENCES vehicles(id) ON DELETE CASCADE
+);
+
+
+
+
+
+
+
+CREATE TABLE fuel_records(
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  vehicle_id INT(11) NOT NULL,
+  fuel_level DECIMAL(5,2) NOT NULL,date DATETIME NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (vehicle_id) REFERENCES vehicles(id)) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+
+
+
+
+
+
+ select * from users;
++----+------------------------+-------------------------------------------+----------------------------------+--------------+---------------------+
+| id | full_name              | email                                     | password      12345              | phone_number | created_at          |
++----+------------------------+-------------------------------------------+----------------------------------+--------------+---------------------+
+|  1 | Sandhya Narsingh Harge | sandhya.harge22@stmirascollegepune.edu.in | 827ccb0eea8a706c4c34a16891f84e7b |              | 2025-01-15 18:15:01 |
+|  2 | pranjali               | pranjali@gmail.com                        | 827ccb0eea8a706c4c34a16891f84e7b |              | 2025-01-16 06:56:18 |
+|  3 | user1                  | user1@gmail.com                           | 827ccb0eea8a706c4c34a16891f84e7b |              | 2025-01-18 10:33:55 |
+|  4 | user                   | user@gmail.com                            | 827ccb0eea8a706c4c34a16891f84e7b |              | 2025-01-18 17:14:45 |
+|  5 | Sandhya Narsingh Harge | sandhyaharge1@gmail.com                   | 827ccb0eea8a706c4c34a16891f84e7b |              | 2025-01-20 19:53:45 |
++----+------------------------+-------------------------------------------+----------------------------------+--------------+---------------------+
+5 rows in set (0.00 sec)
+
+
+
+CREATE TABLE puc (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    vehicle_number VARCHAR(20) NOT NULL,
+    puc_number VARCHAR(100) NOT NULL UNIQUE,
+    issue_date DATE NOT NULL,
+    expiry_date DATE NOT NULL,
+    status ENUM('Valid', 'Expired') DEFAULT 'Valid',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (vehicle_number) REFERENCES vehicles(vehicle_number) ON DELETE CASCADE
+);
+
+
+
+update users set role='Admin' where email='sandhyaharge1@gmail.com';
+
+
+
+ALTER TABLE fuel_records
+DROP FOREIGN KEY fuel_records_ibfk_1;
+
+ALTER TABLE fuel_records
+ADD CONSTRAINT fuel_records_ibfk_1 
+FOREIGN KEY (vehicle_id) REFERENCES vehicles(id) 
+ON DELETE CASCADE;
+
+
+SELECT id, vehicle_number, vehicle_type, model, brand, year_of_manufacture, color 
+FROM vehicles 
+WHERE user_id = 1;
+
+
+
+Manually Test the Reminder Check
+Open the browser console (Ctrl + Shift + I → Go to Console tab).
+Type and run the following command:
+js
+Copy
+Edit
+checkReminders();
+This will manually trigger the function to check for upcoming reminders.
+If a reminder is due in 2 days, you will see a simulated email notification in the console.
+
+
+ ALTER TABLE fuel_records DROP FOREIGN KEY fk_vehicle_id;
+Query OK, 2 rows affected (0.02 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+
+
+
+
+ ALTER TABLE puc DROP FOREIGN KEY fk_puc_vehicle;
+Query OK, 2 rows affected (0.03 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Conclusion
+The Vehicle Management System (VMS) is designed to provide a centralized platform for users and administrators to manage various vehicle-related services such as vehicle details, fines, fuel consumption, insurance, FASTag, PUC, and GPS tracking. The system aims to simplify and automate vehicle management tasks to ensure efficiency, transparency, and ease of use.
+
+Through different modules like Fines Management, Fuel Tracking, Insurance, and Live GPS, users can monitor and manage their vehicles effectively. The system also provides role-based access to ensure that users and admins can access their respective dashboards with functionalities tailored to their roles.
+
+⚙️ Limitations
+Despite the effectiveness of this system, there are some limitations that can be addressed in future versions:
+
+Limited GPS Tracking Accuracy:
+
+The current system may rely on third-party GPS APIs that might have latency or location accuracy issues.
+No Payment Integration:
+
+Fines, FASTag recharge, and insurance renewal are tracked but cannot be directly paid through the system.
+No Notification System:
+
+Users are not notified via SMS, Email, or App notifications for pending fines, insurance expiry, or PUC renewal.
+Basic Security Measures:
+
+Currently, only simple authentication is implemented. There is no two-factor authentication (2FA) or strong encryption for sensitive data.
+Manual Data Entry:
+
+All records like fuel, fines, insurance, and PUC need to be entered manually, which may lead to human errors.
+No Multi-language Support:
+
+The system is available only in English, limiting accessibility for regional language users.
+🚀 Future Enhancements
+To improve the system's functionality, security, and user experience, the following enhancements can be implemented in future versions:
+
+Online Payment Integration:
+
+Enable online payment gateways for users to pay fines, recharge FASTag, or renew insurance directly through the platform.
+Real-time GPS Tracking:
+
+Integrate advanced GPS modules and APIs to ensure more accurate and real-time vehicle location tracking.
+Notification & Alert System:
+
+Implement Email, SMS, and Push notifications for reminders related to fines, PUC expiry, insurance renewal, and vehicle maintenance.
+Advanced Analytics and Reports:
+
+Provide graphical dashboards and analytics reports for fuel consumption trends, fine history, and vehicle usage to help users make informed decisions.
+Mobile Application Development:
+
+Develop Android and iOS mobile applications for on-the-go access to vehicle management services.
+Data Import and Export:
+
+Allow bulk upload (CSV/Excel) for vehicle, fines, and insurance records and export data for external analysis.
+Enhanced Security:
+
+Implement Two-Factor Authentication (2FA) and data encryption for more secure user management.
+Multi-language Support:
+
+Add regional language options (Marathi, Hindi, etc.) for better usability among diverse users.
+Role Expansion:
+
+Introduce more user roles like Mechanic, Insurance Agent, and Traffic Officer for expanded services.
+Integration with Government APIs:
+
+Direct integration with RTO, FASTag, and Insurance APIs to fetch live data and minimize manual entries.
+🌐 Final Thoughts
+The VMS project is a robust foundation for managing vehicle-related tasks in a digital platform. By addressing current limitations and implementing the proposed enhancements, this system can evolve into a comprehensive, secure, and user-friendly solution that caters to all stakeholders in vehicle management, including individuals, companies, and government agencies.
+
+If you want this conclusion as a Word or PDF document, let me know! I can prepare a file for you. 🚗✨
+
+
+
+
+
+
+
+
+You said:
+can you give in one para
+ChatGPT said:
+Sure! Here is the conclusion with limitations and future enhancements in a single paragraph:
+
+The Vehicle Management System (VMS) is an efficient platform that helps users and administrators manage various vehicle-related services like fines, fuel tracking, insurance, FASTag, PUC, and GPS tracking. While the system successfully streamlines vehicle management tasks, it has some limitations such as lack of online payment integration, limited GPS tracking accuracy, absence of notification systems, basic security without two-factor authentication, and manual data entry, which may lead to errors. Additionally, it currently supports only English, restricting accessibility for regional users. In the future, VMS can be enhanced by adding online payment gateways, real-time GPS tracking, SMS and email notifications, advanced analytics, mobile applications, bulk data import/export, improved security features like 2FA, multi-language support, expanded user roles, and integration with government APIs like RTO and FASTag for real-time data access. These improvements will make the system more secure, user-friendly, and comprehensive for all vehicle owners and administrators.
+
+
+
+
+
+
+
+You said:
+The Vehicle Management System (VMS) is an efficient platform that helps users and administrators manage various vehicle-related services like fines, fuel tracking, insurance, FASTag, PUC, and GPS tracking. While the system successfully streamlines vehicle management tasks.
+
+It has some limitations such as lack of online payment integration, limited GPS tracking accuracy, absence of notification systems, basic security without two-factor authentication, and manual data entry, which may lead to errors. Additionally, it currently supports only English, restricting accessibility for regional users.
+
+In the future, VMS can be enhanced by adding online payment gateways, real-time GPS tracking, SMS and email notifications, advanced analytics, mobile applications, bulk data import/export, improved security features ,multi-language support, expanded user roles, and integration with government APIs like RTO and FASTag for real-time data access. These improvements will make the system more secure, user-friendly, and comprehensive for all vehicle owners and administrators.   make it small because i wanted to add this in ppt
+ChatGPT said:
+Sure! Here is a shortened and concise version for your PPT:
+
+The Vehicle Management System (VMS) is a platform that helps users and admins manage vehicle services like fines, fuel, insurance, FASTag, PUC, and GPS. Though efficient, it has limitations such as no online payments, limited GPS accuracy, no notifications, basic security, and manual data entry. Future enhancements include payment integration, real-time GPS, alerts, analytics, mobile apps, better security, multi-language support, and API integration for real-time data, making VMS more secure, user-friendly, and complete.
+
+
+
+ALTER TABLE insurance DROP FOREIGN KEY insurance_ibfk_1;
+ALTER TABLE insurance ADD CONSTRAINT insurance_ibfk_1 FOREIGN KEY (vehicle_id) REFERENCES vehicles (id) ON DELETE CASCADE;
+
+
+
+
+
